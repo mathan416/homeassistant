@@ -1,0 +1,786 @@
+esphome:
+  name: "esphome-web-d6cc9c"
+  friendly_name: UK_Train_Board
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "zBbN15BGgH1Pw+z7hh5LJVNSVndEZfFIgeGKlPPYNZQ="
+
+logger:
+  level: DEBUG
+  
+ota:
+  - platform: esphome
+    password: "ce030e061f22bfca439b7ef3e3374afc"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "TrainBoard Fallback Hotspot"
+    password: "HPFRcTtxZYr6"
+
+# ============================================================
+# Simple globals for station management
+# ============================================================
+globals:
+  - id: current_station
+    type: int
+    initial_value: '0'
+
+# ============================================================
+# Home Assistant Sensors for Live Train Data (5 trains per station)
+# ============================================================
+text_sensor:
+  # Newbury train data (5 trains)
+  - platform: homeassistant
+    id: newbury_train_1_time
+    entity_id: sensor.newbury_train_1_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_1_destination
+    entity_id: sensor.newbury_train_1_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_1_platform
+    entity_id: sensor.newbury_train_1_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_1_status
+    entity_id: sensor.newbury_train_1_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_2_time
+    entity_id: sensor.newbury_train_2_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_2_destination
+    entity_id: sensor.newbury_train_2_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_2_platform
+    entity_id: sensor.newbury_train_2_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_2_status
+    entity_id: sensor.newbury_train_2_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_3_time
+    entity_id: sensor.newbury_train_3_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_3_destination
+    entity_id: sensor.newbury_train_3_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_3_platform
+    entity_id: sensor.newbury_train_3_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_3_status
+    entity_id: sensor.newbury_train_3_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_4_time
+    entity_id: sensor.newbury_train_4_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_4_destination
+    entity_id: sensor.newbury_train_4_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_4_platform
+    entity_id: sensor.newbury_train_4_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_4_status
+    entity_id: sensor.newbury_train_4_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_5_time
+    entity_id: sensor.newbury_train_5_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_5_destination
+    entity_id: sensor.newbury_train_5_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_5_platform
+    entity_id: sensor.newbury_train_5_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: newbury_train_5_status
+    entity_id: sensor.newbury_train_5_status
+    internal: true
+    on_value:
+      - component.update: my_display
+    
+  # Norwich train data (5 trains)
+  - platform: homeassistant
+    id: norwich_train_1_time
+    entity_id: sensor.norwich_train_1_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_1_destination
+    entity_id: sensor.norwich_train_1_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_1_platform
+    entity_id: sensor.norwich_train_1_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_1_status
+    entity_id: sensor.norwich_train_1_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_2_time
+    entity_id: sensor.norwich_train_2_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_2_destination
+    entity_id: sensor.norwich_train_2_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_2_platform
+    entity_id: sensor.norwich_train_2_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_2_status
+    entity_id: sensor.norwich_train_2_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_3_time
+    entity_id: sensor.norwich_train_3_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_3_destination
+    entity_id: sensor.norwich_train_3_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_3_platform
+    entity_id: sensor.norwich_train_3_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_3_status
+    entity_id: sensor.norwich_train_3_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_4_time
+    entity_id: sensor.norwich_train_4_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_4_destination
+    entity_id: sensor.norwich_train_4_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_4_platform
+    entity_id: sensor.norwich_train_4_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_4_status
+    entity_id: sensor.norwich_train_4_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_5_time
+    entity_id: sensor.norwich_train_5_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_5_destination
+    entity_id: sensor.norwich_train_5_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_5_platform
+    entity_id: sensor.norwich_train_5_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: norwich_train_5_status
+    entity_id: sensor.norwich_train_5_status
+    internal: true
+    on_value:
+      - component.update: my_display
+    
+  # Manchester train data (5 trains)
+  - platform: homeassistant
+    id: manchester_train_1_time
+    entity_id: sensor.manchester_train_1_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_1_destination
+    entity_id: sensor.manchester_train_1_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_1_platform
+    entity_id: sensor.manchester_train_1_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_1_status
+    entity_id: sensor.manchester_train_1_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_2_time
+    entity_id: sensor.manchester_train_2_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_2_destination
+    entity_id: sensor.manchester_train_2_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_2_platform
+    entity_id: sensor.manchester_train_2_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_2_status
+    entity_id: sensor.manchester_train_2_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_3_time
+    entity_id: sensor.manchester_train_3_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_3_destination
+    entity_id: sensor.manchester_train_3_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_3_platform
+    entity_id: sensor.manchester_train_3_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_3_status
+    entity_id: sensor.manchester_train_3_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_4_time
+    entity_id: sensor.manchester_train_4_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_4_destination
+    entity_id: sensor.manchester_train_4_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_4_platform
+    entity_id: sensor.manchester_train_4_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_4_status
+    entity_id: sensor.manchester_train_4_status
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_5_time
+    entity_id: sensor.manchester_train_5_time
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_5_destination
+    entity_id: sensor.manchester_train_5_destination
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_5_platform
+    entity_id: sensor.manchester_train_5_platform
+    internal: true
+    on_value:
+      - component.update: my_display
+  - platform: homeassistant
+    id: manchester_train_5_status
+    entity_id: sensor.manchester_train_5_status
+    internal: true
+    on_value:
+      - component.update: my_display
+
+# ============================================================
+# Fonts
+# ============================================================
+font:
+  - file: 'gfonts://Roboto'
+    id: header_font
+    size: 12
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: time_font
+    size: 10
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: dest_font
+    size: 11
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+# ============================================================
+# UK Rail Colors
+# ============================================================
+color:
+  - id: rail_blue
+    hex: "0019A8"
+  - id: rail_yellow
+    hex: "FFD800"
+  - id: rail_white
+    hex: "FFFFFF"
+  - id: rail_black
+    hex: "000000"
+  - id: rail_red
+    hex: "E60000"
+  - id: rail_green
+    hex: "00A650"
+  - id: rail_amber
+    hex: "FF8C00"
+  - id: background_blue
+    hex: "001F3F"
+
+# ============================================================
+# Hardware Setup
+# ============================================================
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    id: backlight
+    restore_mode: ALWAYS_ON
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+spi:
+  - id: tft
+    clk_pin: GPIO14
+    mosi_pin: GPIO13
+    miso_pin: GPIO12
+  - id: touch
+    clk_pin: GPIO25
+    mosi_pin: GPIO32
+    miso_pin: GPIO39
+
+output:
+  - platform: ledc
+    pin: GPIO21
+    id: backlight_pwm
+
+# ============================================================
+# Main Display
+# ============================================================
+display:
+  - platform: ili9xxx
+    model: ILI9341
+    id: my_display
+    spi_id: tft
+    cs_pin: GPIO15
+    dc_pin: GPIO2
+    auto_clear_enabled: true
+    invert_colors: false
+    color_palette: 8BIT
+    rotation: 0
+    dimensions: 
+      width: 320
+      height: 240
+    update_interval: 15s
+    lambda: |-
+      // Helper function to clean text strings
+      auto clean_text = [](std::string text) -> std::string {
+        std::string result;
+        for (char c : text) {
+          if (c >= 32 && c <= 126) {
+            result += c;
+          } else {
+            result += '?';
+          }
+        }
+        return result;
+      };
+      
+      // Helper function to get status color
+      auto get_status_color = [](const std::string& status) -> Color {
+        if (status.find("On time") != std::string::npos) return id(rail_green);
+        if (status.find("Exp") != std::string::npos || status.find("Delayed") != std::string::npos) return id(rail_amber);
+        if (status.find("Cancel") != std::string::npos) return id(rail_red);
+        return id(rail_white);
+      };
+      
+      // Helper function to display a train row
+      auto display_train = [&](int row, const std::string& time, const std::string& dest, 
+                               const std::string& plat, const std::string& status) {
+        std::string display_dest = dest;
+        std::string display_status = status;
+        
+        if (display_dest.length() > 18) display_dest = display_dest.substr(0, 15) + "...";
+        if (display_status.length() > 10) display_status = display_status.substr(0, 7) + "...";
+        
+        int y_pos = 65 + row * 25;
+        it.printf(5, y_pos, id(time_font), id(rail_white), "%s", time.c_str());
+        it.printf(50, y_pos, id(dest_font), id(rail_white), "%s", display_dest.c_str());
+        it.printf(200, y_pos, id(time_font), id(rail_white), "%s", plat.c_str());
+        it.printf(240, y_pos, id(time_font), get_status_color(display_status), "%s", display_status.c_str());
+      };
+      
+      // Clear with rail blue background
+      it.fill(id(background_blue));
+      
+      // Header bar
+      it.filled_rectangle(0, 0, 320, 25, id(rail_blue));
+      
+      // Current time
+      it.strftime(5, 5, id(header_font), id(rail_white), TextAlign::TOP_LEFT, "%H:%M %d/%m", id(esptime).now());
+      
+      // Station name based on current_station
+      std::string station_name;
+      if (id(current_station) == 0) station_name = "Newbury";
+      else if (id(current_station) == 1) station_name = "Norwich";
+      else station_name = "Manchester Pic";
+      
+      it.printf(160, 5, id(header_font), id(rail_white), TextAlign::TOP_CENTER, "%s Departures", station_name.c_str());
+      
+      // Check if we have any live data for current station
+      bool has_live_data = false;
+      if (id(current_station) == 0) {
+        has_live_data = (id(newbury_train_1_time).has_state() && id(newbury_train_1_time).state != "--:--") || 
+                       (id(newbury_train_2_time).has_state() && id(newbury_train_2_time).state != "--:--") ||
+                       (id(newbury_train_3_time).has_state() && id(newbury_train_3_time).state != "--:--") ||
+                       (id(newbury_train_4_time).has_state() && id(newbury_train_4_time).state != "--:--") ||
+                       (id(newbury_train_5_time).has_state() && id(newbury_train_5_time).state != "--:--");
+      } else if (id(current_station) == 1) {
+        has_live_data = (id(norwich_train_1_time).has_state() && id(norwich_train_1_time).state != "--:--") || 
+                       (id(norwich_train_2_time).has_state() && id(norwich_train_2_time).state != "--:--") ||
+                       (id(norwich_train_3_time).has_state() && id(norwich_train_3_time).state != "--:--") ||
+                       (id(norwich_train_4_time).has_state() && id(norwich_train_4_time).state != "--:--") ||
+                       (id(norwich_train_5_time).has_state() && id(norwich_train_5_time).state != "--:--");
+      } else {
+        has_live_data = (id(manchester_train_1_time).has_state() && id(manchester_train_1_time).state != "--:--") || 
+                       (id(manchester_train_2_time).has_state() && id(manchester_train_2_time).state != "--:--") ||
+                       (id(manchester_train_3_time).has_state() && id(manchester_train_3_time).state != "--:--") ||
+                       (id(manchester_train_4_time).has_state() && id(manchester_train_4_time).state != "--:--") ||
+                       (id(manchester_train_5_time).has_state() && id(manchester_train_5_time).state != "--:--");
+      }
+      
+      // Live indicator
+      if (has_live_data) {
+        it.filled_circle(300, 12, 6, Color(0, 255, 0)); // Pure green
+        it.print(290, 5, id(header_font), id(rail_white), TextAlign::TOP_RIGHT, "LIVE");
+      } else {
+        it.filled_circle(300, 12, 6, Color(255, 165, 0)); // Pure orange
+        it.print(290, 5, id(header_font), id(rail_white), TextAlign::TOP_RIGHT, "DEMO");
+      }
+      
+      // Column headers
+      int header_y = 35;
+      it.filled_rectangle(0, header_y, 320, 20, id(rail_yellow));
+      it.print(5, header_y + 3, id(header_font), id(rail_black), "Time");
+      it.print(50, header_y + 3, id(header_font), id(rail_black), "Destination");
+      it.print(200, header_y + 3, id(header_font), id(rail_black), "Plat");
+      it.print(240, header_y + 3, id(header_font), id(rail_black), "Status");
+      
+      // Display train data
+      if (id(current_station) == 0) { // Newbury
+        // Train 1
+        std::string time1 = id(newbury_train_1_time).has_state() && id(newbury_train_1_time).state != "--:--" ? 
+                           clean_text(id(newbury_train_1_time).state) : "09:15";
+        std::string dest1 = id(newbury_train_1_destination).has_state() && id(newbury_train_1_destination).state != "No service" ? 
+                           clean_text(id(newbury_train_1_destination).state) : "London Paddington";
+        std::string plat1 = id(newbury_train_1_platform).has_state() && id(newbury_train_1_platform).state != "-" && id(newbury_train_1_platform).state != "unknown" ? 
+                           clean_text(id(newbury_train_1_platform).state) : "2";
+        std::string stat1 = id(newbury_train_1_status).has_state() && id(newbury_train_1_status).state != "Unknown" ? 
+                           clean_text(id(newbury_train_1_status).state) : "On time";
+        display_train(0, time1, dest1, plat1, stat1);
+
+        // Train 2
+        std::string time2 = id(newbury_train_2_time).has_state() && id(newbury_train_2_time).state != "--:--" ? 
+                           clean_text(id(newbury_train_2_time).state) : "09:32";
+        std::string dest2 = id(newbury_train_2_destination).has_state() && id(newbury_train_2_destination).state != "No service" ? 
+                           clean_text(id(newbury_train_2_destination).state) : "Reading";
+        std::string plat2 = id(newbury_train_2_platform).has_state() && id(newbury_train_2_platform).state != "-" && id(newbury_train_2_platform).state != "unknown" ? 
+                           clean_text(id(newbury_train_2_platform).state) : "1";
+        std::string stat2 = id(newbury_train_2_status).has_state() && id(newbury_train_2_status).state != "Unknown" ? 
+                           clean_text(id(newbury_train_2_status).state) : "Exp 09:35";
+        display_train(1, time2, dest2, plat2, stat2);
+        
+        // Train 3
+        std::string time3 = id(newbury_train_3_time).has_state() && id(newbury_train_3_time).state != "--:--" ? 
+                           clean_text(id(newbury_train_3_time).state) : "09:45";
+        std::string dest3 = id(newbury_train_3_destination).has_state() && id(newbury_train_3_destination).state != "No service" ? 
+                           clean_text(id(newbury_train_3_destination).state) : "Oxford";
+        std::string plat3 = id(newbury_train_3_platform).has_state() && id(newbury_train_3_platform).state != "-" && id(newbury_train_3_platform).state != "unknown"? 
+                           clean_text(id(newbury_train_3_platform).state) : "3";
+        std::string stat3 = id(newbury_train_3_status).has_state() && id(newbury_train_3_status).state != "Unknown" ? 
+                           clean_text(id(newbury_train_3_status).state) : "On time";
+        display_train(2, time3, dest3, plat3, stat3);
+        
+        // Train 4
+        std::string time4 = id(newbury_train_4_time).has_state() && id(newbury_train_4_time).state != "--:--" ? 
+                           clean_text(id(newbury_train_4_time).state) : "10:01";
+        std::string dest4 = id(newbury_train_4_destination).has_state() && id(newbury_train_4_destination).state != "No service" ? 
+                           clean_text(id(newbury_train_4_destination).state) : "London Paddington";
+        std::string plat4 = id(newbury_train_4_platform).has_state() && id(newbury_train_4_platform).state != "-" && id(newbury_train_4_platform).state != "unknown" ? 
+                           clean_text(id(newbury_train_4_platform).state) : "2";
+        std::string stat4 = id(newbury_train_4_status).has_state() && id(newbury_train_4_status).state != "Unknown" ? 
+                           clean_text(id(newbury_train_4_status).state) : "Cancelled";
+        display_train(3, time4, dest4, plat4, stat4);
+        
+        // Train 5
+        std::string time5 = id(newbury_train_5_time).has_state() && id(newbury_train_5_time).state != "--:--" ? 
+                           clean_text(id(newbury_train_5_time).state) : "10:15";
+        std::string dest5 = id(newbury_train_5_destination).has_state() && id(newbury_train_5_destination).state != "No service" ? 
+                           clean_text(id(newbury_train_5_destination).state) : "Hungerford";
+        std::string plat5 = id(newbury_train_5_platform).has_state() && id(newbury_train_5_platform).state != "-" && id(newbury_train_5_platform).state != "unknown"? 
+                           clean_text(id(newbury_train_5_platform).state) : "1";
+        std::string stat5 = id(newbury_train_5_status).has_state() && id(newbury_train_5_status).state != "Unknown" ? 
+                           clean_text(id(newbury_train_5_status).state) : "On time";
+         display_train(4, time5, dest5, plat5, stat5);
+
+      } else if (id(current_station) == 1) { // Norwich
+        // Train 1
+        std::string time1 = id(norwich_train_1_time).has_state() && id(norwich_train_1_time).state != "--:--" ? 
+                           clean_text(id(norwich_train_1_time).state) : "10:15";
+        std::string dest1 = id(norwich_train_1_destination).has_state() && id(norwich_train_1_destination).state != "No service" ? 
+                           clean_text(id(norwich_train_1_destination).state) : "London Liverpool St";
+        std::string plat1 = id(norwich_train_1_platform).has_state() && id(norwich_train_1_platform).state != "-" && id(norwich_train_1_platform).state != "unknown"? 
+                           clean_text(id(norwich_train_1_platform).state) : "1";
+        std::string stat1 = id(norwich_train_1_status).has_state() && id(norwich_train_1_status).state != "Unknown" ? 
+                           clean_text(id(norwich_train_1_status).state) : "On time";
+        display_train(0, time1, dest1, plat1, stat1);
+        
+        // Train 2
+        std::string time2 = id(norwich_train_2_time).has_state() && id(norwich_train_2_time).state != "--:--" ? 
+                           clean_text(id(norwich_train_2_time).state) : "10:45";
+        std::string dest2 = id(norwich_train_2_destination).has_state() && id(norwich_train_2_destination).state != "No service" ? 
+                           clean_text(id(norwich_train_2_destination).state) : "Cambridge";
+        std::string plat2 = id(norwich_train_2_platform).has_state() && id(norwich_train_2_platform).state != "-" && id(norwich_train_2_platform).state != "unknown"? 
+                           clean_text(id(norwich_train_2_platform).state) : "2";
+        std::string stat2 = id(norwich_train_2_status).has_state() && id(norwich_train_2_status).state != "Unknown" ? 
+                           clean_text(id(norwich_train_2_status).state) : "Exp 10:50";
+        display_train(1, time2, dest2, plat2, stat2);
+        
+        // Train 3
+        std::string time3 = id(norwich_train_3_time).has_state() && id(norwich_train_3_time).state != "--:--" ? 
+                           clean_text(id(norwich_train_3_time).state) : "11:00";
+        std::string dest3 = id(norwich_train_3_destination).has_state() && id(norwich_train_3_destination).state != "No service" ? 
+                           clean_text(id(norwich_train_3_destination).state) : "Great Yarmouth";
+        std::string plat3 = id(norwich_train_3_platform).has_state() && id(norwich_train_3_platform).state != "-" && id(norwich_train_3_platform).state != "unknown"? 
+                           clean_text(id(norwich_train_3_platform).state) : "3";
+        std::string stat3 = id(norwich_train_3_status).has_state() && id(norwich_train_3_status).state != "Unknown" ? 
+                           clean_text(id(norwich_train_3_status).state) : "On time";
+        display_train(2, time3, dest3, plat3, stat3);
+        
+        // Train 4
+        std::string time4 = id(norwich_train_4_time).has_state() && id(norwich_train_4_time).state != "--:--" ? 
+                           clean_text(id(norwich_train_4_time).state) : "11:15";
+        std::string dest4 = id(norwich_train_4_destination).has_state() && id(norwich_train_4_destination).state != "No service" ? 
+                           clean_text(id(norwich_train_4_destination).state) : "Ipswich";
+        std::string plat4 = id(norwich_train_4_platform).has_state() && id(norwich_train_4_platform).state != "-" && id(norwich_train_4_platform).state != "unknown"? 
+                           clean_text(id(norwich_train_4_platform).state) : "1";
+        std::string stat4 = id(norwich_train_4_status).has_state() && id(norwich_train_4_status).state != "Unknown" ? 
+                           clean_text(id(norwich_train_4_status).state) : "Delayed";
+        display_train(3, time4, dest4, plat4, stat4);
+        
+        // Train 5
+        std::string time5 = id(norwich_train_5_time).has_state() && id(norwich_train_5_time).state != "--:--" ? 
+                           clean_text(id(norwich_train_5_time).state) : "11:30";
+        std::string dest5 = id(norwich_train_5_destination).has_state() && id(norwich_train_5_destination).state != "No service" ? 
+                           clean_text(id(norwich_train_5_destination).state) : "London Liverpool St";
+        std::string plat5 = id(norwich_train_5_platform).has_state() && id(norwich_train_5_platform).state != "-" && id(norwich_train_5_platform).state != "unknown"? 
+                           clean_text(id(norwich_train_5_platform).state) : "2";
+        std::string stat5 = id(norwich_train_5_status).has_state() && id(norwich_train_5_status).state != "Unknown" ? 
+                           clean_text(id(norwich_train_5_status).state) : "On time";
+        display_train(4, time5, dest5, plat5, stat5);
+        
+      } else { // Manchester Piccadilly
+        // Train 1
+        std::string time1 = id(manchester_train_1_time).has_state() && id(manchester_train_1_time).state != "--:--" ? 
+                           clean_text(id(manchester_train_1_time).state) : "11:15";
+        std::string dest1 = id(manchester_train_1_destination).has_state() && id(manchester_train_1_destination).state != "No service" ? 
+                           clean_text(id(manchester_train_1_destination).state) : "London Euston";
+        std::string plat1 = id(manchester_train_1_platform).has_state() && id(manchester_train_1_platform).state != "-" && id(manchester_train_1_platform).state != "unknown"? 
+                           clean_text(id(manchester_train_1_platform).state) : "14";
+        std::string stat1 = id(manchester_train_1_status).has_state() && id(manchester_train_1_status).state != "Unknown" ? 
+                           clean_text(id(manchester_train_1_status).state) : "On time";
+        display_train(0, time1, dest1, plat1, stat1);
+        
+        // Train 2
+        std::string time2 = id(manchester_train_2_time).has_state() && id(manchester_train_2_time).state != "--:--" ? 
+                           clean_text(id(manchester_train_2_time).state) : "11:30";
+        std::string dest2 = id(manchester_train_2_destination).has_state() && id(manchester_train_2_destination).state != "No service" ? 
+                           clean_text(id(manchester_train_2_destination).state) : "Liverpool Lime St";
+        std::string plat2 = id(manchester_train_2_platform).has_state() && id(manchester_train_2_platform).state != "-" && id(manchester_train_2_platform).state != "unknown"? 
+                           clean_text(id(manchester_train_2_platform).state) : "12";
+        std::string stat2 = id(manchester_train_2_status).has_state() && id(manchester_train_2_status).state != "Unknown" ? 
+                           clean_text(id(manchester_train_2_status).state) : "Cancelled";
+        display_train(1, time2, dest2, plat2, stat2);
+        
+        // Train 3
+        std::string time3 = id(manchester_train_3_time).has_state() && id(manchester_train_3_time).state != "--:--" ? 
+                           clean_text(id(manchester_train_3_time).state) : "11:45";
+        std::string dest3 = id(manchester_train_3_destination).has_state() && id(manchester_train_3_destination).state != "No service" ? 
+                           clean_text(id(manchester_train_3_destination).state) : "Edinburgh";
+        std::string plat3 = id(manchester_train_3_platform).has_state() && id(manchester_train_3_platform).state != "-" && id(manchester_train_3_platform).state != "unknown"? 
+                           clean_text(id(manchester_train_3_platform).state) : "13";
+        std::string stat3 = id(manchester_train_3_status).has_state() && id(manchester_train_3_status).state != "Unknown" ? 
+                           clean_text(id(manchester_train_3_status).state) : "Exp 11:50";
+        display_train(2, time3, dest3, plat3, stat3);
+        
+        // Train 4
+        std::string time4 = id(manchester_train_4_time).has_state() && id(manchester_train_4_time).state != "--:--" ? 
+                           clean_text(id(manchester_train_4_time).state) : "12:00";
+        std::string dest4 = id(manchester_train_4_destination).has_state() && id(manchester_train_4_destination).state != "No service" ? 
+                           clean_text(id(manchester_train_4_destination).state) : "Birmingham New St";
+        std::string plat4 = id(manchester_train_4_platform).has_state() && id(manchester_train_4_platform).state != "-" && id(manchester_train_4_platform).state != "unknown"? 
+                           clean_text(id(manchester_train_4_platform).state) : "11";
+        std::string stat4 = id(manchester_train_4_status).has_state() && id(manchester_train_4_status).state != "Unknown" ? 
+                           clean_text(id(manchester_train_4_status).state) : "On time";
+        display_train(3, time4, dest4, plat4, stat4);
+        
+        // Train 5
+        std::string time5 = id(manchester_train_5_time).has_state() && id(manchester_train_5_time).state != "--:--" ? 
+                           clean_text(id(manchester_train_5_time).state) : "12:15";
+        std::string dest5 = id(manchester_train_5_destination).has_state() && id(manchester_train_5_destination).state != "No service" ? 
+                           clean_text(id(manchester_train_5_destination).state) : "Sheffield";
+        std::string plat5 = id(manchester_train_5_platform).has_state() && id(manchester_train_5_platform).state != "-" && id(manchester_train_5_platform).state != "unknown"? 
+                           clean_text(id(manchester_train_5_platform).state) : "15";
+        std::string stat5 = id(manchester_train_5_status).has_state() && id(manchester_train_5_status).state != "Unknown" ? 
+                           clean_text(id(manchester_train_5_status).state) : "Delayed";
+        display_train(4, time5, dest5, plat5, stat5);
+      }
+      
+      // Footer
+      std::string footer_text = has_live_data ? "Live Data Active" : "Demo Mode";
+      it.printf(5, 225, id(header_font), id(rail_yellow), TextAlign::BOTTOM_LEFT, "%s", footer_text.c_str());
+      it.print(315, 225, id(header_font), id(rail_yellow), TextAlign::BOTTOM_RIGHT, "Touch to change");
+
+# ============================================================
+# Touchscreen for Station Switching
+# ============================================================
+touchscreen:
+  platform: xpt2046
+  id: my_touchscreen
+  spi_id: touch
+  cs_pin: GPIO33
+  interrupt_pin: GPIO36
+  calibration:
+    x_min: 250
+    x_max: 3800
+    y_min: 340
+    y_max: 3860
+  transform:
+    swap_xy: true
+  on_touch:
+  - lambda: |-
+      // Cycle through stations (0, 1, 2)
+      id(current_station) = (id(current_station) + 1) % 3;
+      ESP_LOGD("train_api", "Switched to station: %d", id(current_station));
+      
+      // Force display update immediately
+      id(my_display).update();
+        
+        

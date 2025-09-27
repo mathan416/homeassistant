@@ -1,0 +1,164 @@
+esphome:
+  name: "esphome-web-d6cc9c"
+  friendly_name: CYD1
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "zBbN15BGgH1Pw+z7hh5LJVNSVndEZfFIgeGKlPPYNZQ="
+
+logger:
+  
+ota:
+  - platform: esphome
+    password: "ce030e061f22bfca439b7ef3e3374afc"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Cyd1 Fallback Hotspot"
+    password: "HPFRcTtxZYr6"
+
+sensor:
+  - platform: homeassistant
+    id: inside_temperature
+    entity_id: sensor.hallway_temperature
+    internal: true
+
+  - platform: homeassistant
+    id: outside_temperature
+    entity_id: sensor.mississauga_temperature
+    internal: true
+
+# Create a font to use, add and remove glyphs as needed. 
+font:
+  - file: 'gfonts://Silkscreen'
+    id: arimo24
+    size: 18
+    glyphs: "!\"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ abcdefghijklmnopqrstuvwxyzåäö"
+  - file: 'gfonts://Silkscreen'
+    id: arimo36
+    size: 36
+    glyphs: "!\"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ abcdefghijklmnopqrstuvwxyzåäö"
+  - file: 'gfonts://Silkscreen'
+    id: arimo96
+    size: 72
+    glyphs: "!\"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ abcdefghijklmnopqrstuvwxyzåäö"
+  - file: "gfonts://Silkscreen"
+    id: medium
+    size: 15
+
+globals:
+  - id: display_hello
+    type: bool
+    initial_value: 'true'
+
+# Create a Home Assistant blue color
+color:
+  - id: ha_blue
+    hex: 51c0f2
+  - id: ha_red
+    hex: FF002B
+  - id: ha_white
+    hex: FFFFFF
+
+# ============================================================ 
+# Home Assistant related setup
+#
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    id: backlight
+    restore_mode: ALWAYS_ON
+
+# Create a time sensor, this will fetch time from Home Assistant
+time:
+  - platform: homeassistant
+    id: esptime
+
+# ============================================================ 
+# Hardware related setup
+#
+# Setup SPI for the display. The ESP32-2432S028R uses separate SPI buses for display and touch
+spi:
+  - id: tft
+    clk_pin: GPIO14
+    mosi_pin: GPIO13
+    miso_pin: GPIO12
+  - id: touch
+    clk_pin: GPIO25
+    mosi_pin: GPIO32
+    miso_pin: GPIO39
+
+# Setup a pin to control the backlight
+output:
+  - platform: ledc
+    pin: GPIO21
+    id: backlight_pwm
+
+# Setup the ili9xxx platform
+#
+# Display is used as 240x320 by default so we rotate it to 90°
+#
+# We print date and time wth the strftime() function, see the ESPHome documentation to 
+# format date and atime to your locale.
+#
+display:
+  - platform: ili9xxx
+    model: ILI9341
+    spi_id: tft
+    cs_pin: GPIO15
+    dc_pin: GPIO2
+    auto_clear_enabled: true
+    invert_colors: true
+    color_palette: 8BIT
+    rotation: 0
+    dimensions: 
+      width: 320
+      height: 240
+    lambda: |-
+      if (id(display_hello)) {
+        it.fill(id(ha_blue));
+        it.strftime(90, 100, id(arimo24), "%Y-%m-%d", id(esptime).now());
+        it.strftime(40, 120, id(arimo96), "%H:%M", id(esptime).now());
+      } else {
+        it.fill(id(ha_red));
+
+      // Print inside temperature (from homeassistant sensor)
+      if (id(inside_temperature).has_state()) {
+        it.printf(150, 23, id(medium), TextAlign::TOP_RIGHT , "Inside: %.1fC", id(inside_temperature).state);
+      }
+
+      // Print outside temperature (from homeassistant weather)
+      if (id(outside_temperature).has_state()) {
+        it.printf(150, 60, id(medium), TextAlign::BASELINE_RIGHT , "Outside: %.1fC", id(outside_temperature).state);
+      }
+
+        it.print(80, 120, id(arimo36), id(ha_white), "Gotcha!");
+      }
+
+touchscreen:
+  platform: xpt2046
+  id: my_touchscreen
+  spi_id: touch
+  cs_pin: GPIO33
+  interrupt_pin: GPIO36
+  calibration:
+    x_min: 250
+    x_max: 3800
+    y_min: 340
+    y_max: 3860
+  transform:
+    swap_xy: true
+  on_touch:
+  - lambda: |-
+      id(display_hello) = !id(display_hello);

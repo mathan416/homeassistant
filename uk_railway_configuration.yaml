@@ -1,0 +1,723 @@
+
+# Add the following to configuration.yaml
+# UK Train Departure Data
+rest:
+  # Newbury Station (NBY)
+  - resource: "https://huxley2.azurewebsites.net/departures/NBY/10?accessToken=YOUR_TOKEN_HERE"
+    method: GET
+    scan_interval: 120
+    timeout: 10
+    sensor:
+      - name: "Newbury Departures"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes:
+          - trainServices
+        
+  # Norwich Station (NRW) 
+  - resource: "https://huxley2.azurewebsites.net/departures/NRW/10?accessToken=YOUR_TOKEN_HERE"
+    method: GET
+    scan_interval: 120
+    timeout: 10
+    sensor:
+      - name: "Norwich Departures"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes:
+          - trainServices
+        
+  # Manchester Piccadilly Station (MAN)
+  - resource: "https://huxley2.azurewebsites.net/departures/MAN/10?accessToken=YOUR_TOKEN_HERE"
+    method: GET
+    scan_interval: 120
+    timeout: 10
+    sensor:
+      - name: "Manchester Departures"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes:
+          - trainServices
+
+# Template sensors to extract individual train data (5 trains per station)
+template:
+  - sensor:
+      # ===============================
+      # NEWBURY TRAINS (1-5)
+      # ===============================
+      - name: "Newbury Train 1 Time"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {{ services[0].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Newbury Train 1 Destination"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].destination and services[0].destination|length > 0 %}
+            {{ services[0].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Newbury Train 1 Platform"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].platform is defined %}
+            {{ services[0].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Newbury Train 1 Status"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {% set etd = services[0].etd %}
+            {% set cancelled = services[0].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Newbury Train 2 Time"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {{ services[1].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Newbury Train 2 Destination"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].destination and services[1].destination|length > 0 %}
+            {{ services[1].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Newbury Train 2 Platform"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].platform is defined %}
+            {{ services[1].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Newbury Train 2 Status"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {% set etd = services[1].etd %}
+            {% set cancelled = services[1].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Newbury Train 3 Time"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {{ services[2].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Newbury Train 3 Destination"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].destination and services[2].destination|length > 0 %}
+            {{ services[2].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Newbury Train 3 Platform"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].platform is defined %}
+            {{ services[2].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Newbury Train 3 Status"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {% set etd = services[2].etd %}
+            {% set cancelled = services[2].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Newbury Train 4 Time"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {{ services[3].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Newbury Train 4 Destination"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].destination and services[3].destination|length > 0 %}
+            {{ services[3].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Newbury Train 4 Platform"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].platform is defined %}
+            {{ services[3].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Newbury Train 4 Status"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {% set etd = services[3].etd %}
+            {% set cancelled = services[3].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Newbury Train 5 Time"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {{ services[4].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Newbury Train 5 Destination"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].destination and services[4].destination|length > 0 %}
+            {{ services[4].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Newbury Train 5 Platform"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].platform is defined %}
+            {{ services[4].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Newbury Train 5 Status"
+        state: >
+          {% set services = state_attr('sensor.newbury_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {% set etd = services[4].etd %}
+            {% set cancelled = services[4].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # ===============================
+      # NORWICH TRAINS (1-5)
+      # ===============================
+      - name: "Norwich Train 1 Time"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {{ services[0].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Norwich Train 1 Destination"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].destination and services[0].destination|length > 0 %}
+            {{ services[0].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Norwich Train 1 Platform"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].platform is defined %}
+            {{ services[0].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Norwich Train 1 Status"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {% set etd = services[0].etd %}
+            {% set cancelled = services[0].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Norwich Train 2 Time"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {{ services[1].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Norwich Train 2 Destination"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].destination and services[1].destination|length > 0 %}
+            {{ services[1].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Norwich Train 2 Platform"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].platform is defined %}
+            {{ services[1].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Norwich Train 2 Status"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {% set etd = services[1].etd %}
+            {% set cancelled = services[1].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Norwich Train 3 Time"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {{ services[2].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Norwich Train 3 Destination"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].destination and services[2].destination|length > 0 %}
+            {{ services[2].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Norwich Train 3 Platform"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].platform is defined %}
+            {{ services[2].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Norwich Train 3 Status"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {% set etd = services[2].etd %}
+            {% set cancelled = services[2].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Norwich Train 4 Time"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {{ services[3].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Norwich Train 4 Destination"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].destination and services[3].destination|length > 0 %}
+            {{ services[3].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Norwich Train 4 Platform"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].platform is defined %}
+            {{ services[3].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Norwich Train 4 Status"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {% set etd = services[3].etd %}
+            {% set cancelled = services[3].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Norwich Train 5 Time"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {{ services[4].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Norwich Train 5 Destination"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].destination and services[4].destination|length > 0 %}
+            {{ services[4].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Norwich Train 5 Platform"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].platform is defined %}
+            {{ services[4].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Norwich Train 5 Status"
+        state: >
+          {% set services = state_attr('sensor.norwich_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {% set etd = services[4].etd %}
+            {% set cancelled = services[4].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # ===============================
+      # MANCHESTER TRAINS (1-5)
+      # ===============================
+      - name: "Manchester Train 1 Time"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {{ services[0].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Manchester Train 1 Destination"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].destination and services[0].destination|length > 0 %}
+            {{ services[0].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Manchester Train 1 Platform"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 0 and services[0].platform is defined %}
+            {{ services[0].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Manchester Train 1 Status"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 0 %}
+            {% set etd = services[0].etd %}
+            {% set cancelled = services[0].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Manchester Train 2 Time"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {{ services[1].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Manchester Train 2 Destination"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].destination and services[1].destination|length > 0 %}
+            {{ services[1].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Manchester Train 2 Platform"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 1 and services[1].platform is defined %}
+            {{ services[1].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Manchester Train 2 Status"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 1 %}
+            {% set etd = services[1].etd %}
+            {% set cancelled = services[1].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Manchester Train 3 Time"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {{ services[2].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Manchester Train 3 Destination"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].destination and services[2].destination|length > 0 %}
+            {{ services[2].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Manchester Train 3 Platform"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 2 and services[2].platform is defined %}
+            {{ services[2].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Manchester Train 3 Status"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 2 %}
+            {% set etd = services[2].etd %}
+            {% set cancelled = services[2].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Manchester Train 4 Time"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {{ services[3].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Manchester Train 4 Destination"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].destination and services[3].destination|length > 0 %}
+            {{ services[3].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Manchester Train 4 Platform"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 3 and services[3].platform is defined %}
+            {{ services[3].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Manchester Train 4 Status"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 3 %}
+            {% set etd = services[3].etd %}
+            {% set cancelled = services[3].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+          
+      - name: "Manchester Train 5 Time"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {{ services[4].std }}
+          {% else %}
+            --:--
+          {% endif %}
+      - name: "Manchester Train 5 Destination"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].destination and services[4].destination|length > 0 %}
+            {{ services[4].destination[0].locationName }}
+          {% else %}
+            No service
+          {% endif %}
+      - name: "Manchester Train 5 Platform"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 4 and services[4].platform is defined %}
+            {{ services[4].platform }}
+          {% else %}
+            -
+          {% endif %}
+      - name: "Manchester Train 5 Status"
+        state: >
+          {% set services = state_attr('sensor.manchester_departures', 'trainServices') %}
+          {% if services and services|length > 4 %}
+            {% set etd = services[4].etd %}
+            {% set cancelled = services[4].isCancelled %}
+            {% if cancelled %}
+              Cancelled
+            {% elif etd == 'On time' %}
+              On time
+            {% elif etd == 'Delayed' %}
+              Delayed
+            {% elif ':' in etd %}
+              Exp {{ etd }}
+            {% else %}
+              {{ etd }}
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
