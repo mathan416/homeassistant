@@ -49,6 +49,9 @@ text_sensor:
     attribute: media_artist
     internal: true
     on_value:
+      - logger.log:
+          format: "Artist changed to: %s"
+          args: ['x.c_str()']
       - component.update: my_display
       
   - platform: homeassistant
@@ -57,6 +60,9 @@ text_sensor:
     attribute: media_title
     internal: true
     on_value:
+      - logger.log:
+          format: "Title changed to: %s"
+          args: ['x.c_str()']
       - component.update: my_display
       
   - platform: homeassistant
@@ -72,6 +78,9 @@ text_sensor:
     entity_id: media_player.spotify_your_device 
     internal: true
     on_value:
+      - logger.log:
+          format: "State changed to: %s"
+          args: ['x.c_str()']
       - component.update: my_display
 
 sensor:
@@ -80,6 +89,7 @@ sensor:
     entity_id: media_player.spotify_your_device 
     attribute: media_position
     internal: true
+    force_update: true
     on_value:
       - component.update: my_display
       
@@ -88,6 +98,7 @@ sensor:
     entity_id: media_player.spotify_your_device 
     attribute: media_duration
     internal: true
+    force_update: true
     on_value:
       - component.update: my_display
       
@@ -96,6 +107,7 @@ sensor:
     entity_id: media_player.spotify_your_device 
     attribute: volume_level
     internal: true
+    force_update: true
     on_value:
       - component.update: my_display
 
@@ -365,12 +377,13 @@ touchscreen:
           - homeassistant.service:
               service: media_player.media_play_pause
               data:
-                entity_id: media_player.spotify_your_device 
+                entity_id: media_player.spotify_your_device  
 
 # ============================================================
-# Scrolling Animation Timer
+# Update Intervals
 # ============================================================
 interval:
+  # Scrolling Animation Timer
   - interval: 500ms
     then:
       - lambda: |-
@@ -380,3 +393,11 @@ interval:
             id(scroll_position) = 0;
           }
       - component.update: my_display
+  
+  # Force Spotify data refresh every 5 seconds
+  - interval: 5s
+    then:
+      - homeassistant.service:
+          service: homeassistant.update_entity
+          data:
+            entity_id: media_player.spotify_your_device 
