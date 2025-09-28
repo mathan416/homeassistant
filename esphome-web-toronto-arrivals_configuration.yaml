@@ -1,0 +1,593 @@
+# airports.yaml sensor configuration
+# First, add your NEW API key to secrets.yaml:
+# flightaware_api_key: "YOUR_NEW_PRIVATE_API_KEY_HERE"
+
+rest:
+  # Toronto Pearson (CYYZ) Arrivals
+  - resource: "https://aeroapi.flightaware.com/aeroapi/airports/CYYZ/flights/arrivals"
+    method: GET
+    headers:
+      x-apikey: !secret flightaware_api_key
+    scan_interval: 300  # 5 minutes
+    timeout: 30
+    sensor:
+      - name: "Pearson Arrivals Raw"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes_path: "$"
+        json_attributes:
+          - arrivals
+
+  # Billy Bishop (CYTZ) Arrivals  
+  - resource: "https://aeroapi.flightaware.com/aeroapi/airports/CYTZ/flights/arrivals"
+    method: GET
+    headers:
+      x-apikey: !secret flightaware_api_key
+    scan_interval: 300
+    timeout: 30
+    sensor:
+      - name: "Billy Bishop Arrivals Raw"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes_path: "$"
+        json_attributes:
+          - arrivals
+
+# Template sensors to extract individual flight data
+template:
+  - sensor:
+      # ===============================
+      # PEARSON FLIGHTS (1-5)
+      # ===============================
+      
+      # Flight 1
+      - name: "Pearson Flight 1 Time"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].scheduled_in %}
+            {{ (flights[0].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Pearson Flight 1 Airline"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].operator %}
+            {{ flights[0].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 1 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].ident %}
+            {{ flights[0].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 1 Origin"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].origin and flights[0].origin.city %}
+            {{ flights[0].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 1 Gate"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].gate_destination %}
+            {{ flights[0].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Pearson Flight 1 Status"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].status %}
+            {{ flights[0].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 2
+      - name: "Pearson Flight 2 Time"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].scheduled_in %}
+            {{ (flights[1].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Pearson Flight 2 Airline"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].operator %}
+            {{ flights[1].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 2 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].ident %}
+            {{ flights[1].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 2 Origin"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].origin and flights[1].origin.city %}
+            {{ flights[1].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 2 Gate"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].gate_destination %}
+            {{ flights[1].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Pearson Flight 2 Status"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].status %}
+            {{ flights[1].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 3
+      - name: "Pearson Flight 3 Time"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].scheduled_in %}
+            {{ (flights[2].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Pearson Flight 3 Airline"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].operator %}
+            {{ flights[2].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 3 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].ident %}
+            {{ flights[2].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 3 Origin"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].origin and flights[2].origin.city %}
+            {{ flights[2].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 3 Gate"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].gate_destination %}
+            {{ flights[2].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Pearson Flight 3 Status"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].status %}
+            {{ flights[2].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 4
+      - name: "Pearson Flight 4 Time"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].scheduled_in %}
+            {{ (flights[3].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Pearson Flight 4 Airline"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].operator %}
+            {{ flights[3].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 4 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].ident %}
+            {{ flights[3].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 4 Origin"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].origin and flights[3].origin.city %}
+            {{ flights[3].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 4 Gate"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].gate_destination %}
+            {{ flights[3].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Pearson Flight 4 Status"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].status %}
+            {{ flights[3].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 5
+      - name: "Pearson Flight 5 Time"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].scheduled_in %}
+            {{ (flights[4].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Pearson Flight 5 Airline"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].operator %}
+            {{ flights[4].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 5 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].ident %}
+            {{ flights[4].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 5 Origin"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].origin and flights[4].origin.city %}
+            {{ flights[4].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Pearson Flight 5 Gate"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].gate_destination %}
+            {{ flights[4].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Pearson Flight 5 Status"
+        state: >
+          {% set flights = state_attr('sensor.pearson_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].status %}
+            {{ flights[4].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # ===============================
+      # BILLY BISHOP FLIGHTS (1-5)
+      # ===============================
+      
+      # Flight 1
+      - name: "Billy Bishop Flight 1 Time"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].scheduled_in %}
+            {{ (flights[0].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 1 Airline"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].operator %}
+            {{ flights[0].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 1 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].ident %}
+            {{ flights[0].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 1 Origin"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].origin and flights[0].origin.city %}
+            {{ flights[0].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 1 Gate"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].gate_destination %}
+            {{ flights[0].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 1 Status"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 0 and flights[0].status %}
+            {{ flights[0].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 2
+      - name: "Billy Bishop Flight 2 Time"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].scheduled_in %}
+            {{ (flights[1].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 2 Airline"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].operator %}
+            {{ flights[1].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 2 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].ident %}
+            {{ flights[1].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 2 Origin"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].origin and flights[1].origin.city %}
+            {{ flights[1].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 2 Gate"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].gate_destination %}
+            {{ flights[1].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 2 Status"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 1 and flights[1].status %}
+            {{ flights[1].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 3
+      - name: "Billy Bishop Flight 3 Time"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].scheduled_in %}
+            {{ (flights[2].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 3 Airline"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].operator %}
+            {{ flights[2].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 3 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].ident %}
+            {{ flights[2].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 3 Origin"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].origin and flights[2].origin.city %}
+            {{ flights[2].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 3 Gate"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].gate_destination %}
+            {{ flights[2].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 3 Status"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 2 and flights[2].status %}
+            {{ flights[2].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 4
+      - name: "Billy Bishop Flight 4 Time"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].scheduled_in %}
+            {{ (flights[3].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 4 Airline"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].operator %}
+            {{ flights[3].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 4 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].ident %}
+            {{ flights[3].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 4 Origin"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].origin and flights[3].origin.city %}
+            {{ flights[3].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 4 Gate"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].gate_destination %}
+            {{ flights[3].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 4 Status"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 3 and flights[3].status %}
+            {{ flights[3].status }}
+          {% else %}
+            Unknown
+          {% endif %}
+
+      # Flight 5
+      - name: "Billy Bishop Flight 5 Time"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].scheduled_in %}
+            {{ (flights[4].scheduled_in | as_timestamp) | timestamp_custom('%H:%M') }}
+          {% else %}
+            --:--
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 5 Airline"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].operator %}
+            {{ flights[4].operator }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 5 Flight Number"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].ident %}
+            {{ flights[4].ident }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 5 Origin"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].origin and flights[4].origin.city %}
+            {{ flights[4].origin.city }}
+          {% else %}
+            Unknown
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 5 Gate"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].gate_destination %}
+            {{ flights[4].gate_destination }}
+          {% else %}
+            -
+          {% endif %}
+            
+      - name: "Billy Bishop Flight 5 Status"
+        state: >
+          {% set flights = state_attr('sensor.billy_bishop_arrivals_raw', 'arrivals') %}
+          {% if flights and flights|length > 4 and flights[4].status %}
+            {{ flights[4].status }}
+          {% else %}
+            Unknown
+          {% endif %}
