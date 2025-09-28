@@ -24,7 +24,7 @@ wifi:
   password: !secret wifi_password
   ap:
     ssid: "TrainBoard Fallback Hotspot"
-    password: "HPFRcTtxZYr6"
+    password: !secret wifi_fallback
 
 # ============================================================
 # Simple globals for station management

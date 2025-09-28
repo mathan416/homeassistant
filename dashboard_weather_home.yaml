@@ -24,7 +24,7 @@ wifi:
   password: !secret wifi_password
   ap:
     ssid: "Cyd1 Fallback Hotspot"
-    password: "HPFRcTtxZYr6"
+    password: !secret wifi_fallback
 
 # ============================================================
 # Home Assistant Sensors

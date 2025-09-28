@@ -24,7 +24,7 @@ wifi:
   password: !secret wifi_password
   ap:
     ssid: "AirportArrivals Fallback Hotspot"
-    password: "HPFRcTtxZYr6"
+    password: !secret wifi_fallback
 
 # Enable captive portal for easier wifi setup
 captive_portal:
