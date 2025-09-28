@@ -1,0 +1,380 @@
+esphome:
+  name: "esphome-web-music"
+  friendly_name: Music_Display
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esphome_encryption_key
+
+logger:
+  level: DEBUG
+  
+ota:
+  - platform: esphome
+    password: !secret esphome_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "MusicDisplay Fallback Hotspot"
+    password: "HPFRcTtxZYr6"
+
+# ============================================================
+# Music Player Globals
+# ============================================================
+globals:
+  - id: scroll_position
+    type: int
+    initial_value: '0'
+  - id: scroll_direction
+    type: int
+    initial_value: '1'
+
+# ============================================================
+# Home Assistant Sensors for Spotify Data
+# ============================================================
+text_sensor:
+  - platform: homeassistant
+    id: spotify_artist
+    entity_id: media_player.spotify_iain_bennett
+    attribute: media_artist
+    internal: true
+    on_value:
+      - component.update: my_display
+      
+  - platform: homeassistant
+    id: spotify_title
+    entity_id: media_player.spotify_iain_bennett
+    attribute: media_title
+    internal: true
+    on_value:
+      - component.update: my_display
+      
+  - platform: homeassistant
+    id: spotify_album
+    entity_id: media_player.spotify_iain_bennett
+    attribute: media_album_name
+    internal: true
+    on_value:
+      - component.update: my_display
+      
+  - platform: homeassistant
+    id: spotify_state
+    entity_id: media_player.spotify_iain_bennett
+    internal: true
+    on_value:
+      - component.update: my_display
+
+sensor:
+  - platform: homeassistant
+    id: spotify_position
+    entity_id: media_player.spotify_iain_bennett
+    attribute: media_position
+    internal: true
+    on_value:
+      - component.update: my_display
+      
+  - platform: homeassistant
+    id: spotify_duration
+    entity_id: media_player.spotify_iain_bennett
+    attribute: media_duration
+    internal: true
+    on_value:
+      - component.update: my_display
+      
+  - platform: homeassistant
+    id: spotify_volume
+    entity_id: media_player.spotify_iain_bennett
+    attribute: volume_level
+    internal: true
+    on_value:
+      - component.update: my_display
+
+# ============================================================
+# Fonts
+# ============================================================
+font:
+  - file: 'gfonts://Roboto'
+    id: header_font
+    size: 14
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: title_font
+    size: 18
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: artist_font
+    size: 16
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: album_font
+    size: 12
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: time_font
+    size: 12
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  - file: 'gfonts://Roboto'
+    id: small_font
+    size: 10
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+# ============================================================
+# Music Display Colors
+# ============================================================
+color:
+  - id: music_black
+    hex: "000000"
+  - id: music_white
+    hex: "FFFFFF"
+  - id: music_green
+    hex: "1DB954"  # Spotify green
+  - id: music_yellow
+    hex: "FFD800"
+  - id: music_orange
+    hex: "FF8C00"
+  - id: music_red
+    hex: "E60000"
+  - id: music_blue
+    hex: "1E3A8A"
+  - id: music_gray
+    hex: "808080"
+  - id: background_dark
+    hex: "121212"  # Dark background
+
+# ============================================================
+# Hardware Setup (same as your train board)
+# ============================================================
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    id: backlight
+    restore_mode: ALWAYS_ON
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+spi:
+  - id: tft
+    clk_pin: GPIO14
+    mosi_pin: GPIO13
+    miso_pin: GPIO12
+  - id: touch
+    clk_pin: GPIO25
+    mosi_pin: GPIO32
+    miso_pin: GPIO39
+
+output:
+  - platform: ledc
+    pin: GPIO21
+    id: backlight_pwm
+
+# ============================================================
+# Main Music Display
+# ============================================================
+display:
+  - platform: ili9xxx
+    model: ILI9341
+    id: my_display
+    spi_id: tft
+    cs_pin: GPIO15
+    dc_pin: GPIO2
+    auto_clear_enabled: true
+    invert_colors: false
+    color_palette: 8BIT
+    rotation: 0
+    dimensions: 
+      width: 320
+      height: 240
+    update_interval: 500ms
+    lambda: |-
+      // Helper function to clean text strings
+      auto clean_text = [](std::string text) -> std::string {
+        std::string result;
+        for (char c : text) {
+          if (c >= 32 && c <= 126) {
+            result += c;
+          } else {
+            result += '?';
+          }
+        }
+        return result;
+      };
+      
+      // Helper function to format time
+      auto format_time = [](float seconds) -> std::string {
+        if (std::isnan(seconds) || seconds < 0) return "0:00";
+        int mins = (int)seconds / 60;
+        int secs = (int)seconds % 60;
+        return std::to_string(mins) + ":" + (secs < 10 ? "0" : "") + std::to_string(secs);
+      };
+      
+      // Helper function for scrolling text
+      auto scroll_text = [&](const std::string& text, int max_chars) -> std::string {
+        if (text.length() <= max_chars) return text;
+        
+        int total_length = text.length() + 3; // Add some spacing
+        std::string extended_text = text + "   " + text; // Repeat text with spacing
+        
+        int start_pos = id(scroll_position) % total_length;
+        std::string result = extended_text.substr(start_pos, max_chars);
+        
+        return result;
+      };
+      
+      // Clear with dark background
+      it.fill(id(background_dark));
+      
+      // Check if music is playing
+      bool is_playing = (id(spotify_state).has_state() && 
+                        (id(spotify_state).state == "playing" || id(spotify_state).state == "paused"));
+      
+      if (is_playing) {
+        // Header bar with Spotify branding
+        it.filled_rectangle(0, 0, 320, 30, id(music_green));
+        
+        // Current time
+        it.strftime(5, 8, id(header_font), id(music_white), TextAlign::TOP_LEFT, "%H:%M", id(esptime).now());
+        
+        // Spotify logo area / title
+        it.printf(160, 8, id(header_font), id(music_white), TextAlign::TOP_CENTER, "NOW PLAYING");
+        
+        // Status indicator
+        if (id(spotify_state).state == "playing") {
+          it.printf(310, 8, id(header_font), id(music_white), TextAlign::TOP_RIGHT, ">");
+        } else {
+          it.printf(310, 8, id(header_font), id(music_white), TextAlign::TOP_RIGHT, "||");
+        }
+        
+        // Track Title (scrolling if too long)
+        if (id(spotify_title).has_state() && !id(spotify_title).state.empty()) {
+          std::string title = clean_text(id(spotify_title).state);
+          std::string display_title = scroll_text(title, 25);
+          it.printf(160, 50, id(title_font), id(music_white), TextAlign::TOP_CENTER, "%s", display_title.c_str());
+        }
+        
+        // Artist (scrolling if too long)
+        if (id(spotify_artist).has_state() && !id(spotify_artist).state.empty()) {
+          std::string artist = clean_text(id(spotify_artist).state);
+          std::string display_artist = scroll_text(artist, 30);
+          it.printf(160, 80, id(artist_font), id(music_yellow), TextAlign::TOP_CENTER, "%s", display_artist.c_str());
+        }
+        
+        // Album (scrolling if too long)
+        if (id(spotify_album).has_state() && !id(spotify_album).state.empty()) {
+          std::string album = clean_text(id(spotify_album).state);
+          std::string display_album = scroll_text(album, 32);
+          it.printf(160, 110, id(album_font), id(music_gray), TextAlign::TOP_CENTER, "%s", display_album.c_str());
+        }
+        
+        // Progress bar
+        if (id(spotify_position).has_state() && id(spotify_duration).has_state() && 
+            id(spotify_duration).state > 0) {
+          float progress = id(spotify_position).state / id(spotify_duration).state;
+          if (progress > 1.0) progress = 1.0;
+          if (progress < 0.0) progress = 0.0;
+          
+          int bar_width = 280;
+          int bar_x = 20;
+          int bar_y = 150;
+          
+          // Background bar
+          it.filled_rectangle(bar_x, bar_y, bar_width, 6, id(music_gray));
+          // Progress bar
+          it.filled_rectangle(bar_x, bar_y, (int)(bar_width * progress), 6, id(music_green));
+          
+          // Time stamps
+          std::string current_time = format_time(id(spotify_position).state);
+          std::string total_time = format_time(id(spotify_duration).state);
+          
+          it.printf(20, 170, id(time_font), id(music_white), TextAlign::TOP_LEFT, "%s", current_time.c_str());
+          it.printf(300, 170, id(time_font), id(music_white), TextAlign::TOP_RIGHT, "%s", total_time.c_str());
+        }
+        
+        // Volume indicator
+        if (id(spotify_volume).has_state()) {
+          int volume_percent = (int)(id(spotify_volume).state * 100);
+          it.printf(160, 190, id(small_font), id(music_white), TextAlign::TOP_CENTER, "Volume: %d%%", volume_percent);
+        }
+        
+        // Control hints
+        it.printf(160, 205, id(small_font), id(music_yellow), TextAlign::TOP_CENTER, "Touch to Play/Pause");
+        it.printf(160, 220, id(small_font), id(music_gray), TextAlign::TOP_CENTER, "Top-right corner to refresh");
+        
+      } else {
+        // No music playing screen
+        it.filled_rectangle(0, 0, 320, 30, id(music_blue));
+        it.strftime(5, 8, id(header_font), id(music_white), TextAlign::TOP_LEFT, "%H:%M", id(esptime).now());
+        it.printf(160, 8, id(header_font), id(music_white), TextAlign::TOP_CENTER, "MUSIC DISPLAY");
+        
+        // Large "No music playing" message
+        it.printf(160, 120, id(title_font), id(music_gray), TextAlign::CENTER, "No Music Playing");
+        it.printf(160, 150, id(album_font), id(music_gray), TextAlign::CENTER, "Start playing music on Spotify");
+        
+        // Status indicator
+        it.printf(160, 200, id(small_font), id(music_yellow), TextAlign::CENTER, "Waiting for Spotify...");
+      }
+
+# ============================================================
+# Touchscreen for Play/Pause Control
+# ============================================================
+touchscreen:
+  platform: xpt2046
+  id: my_touchscreen
+  spi_id: touch
+  cs_pin: GPIO33
+  interrupt_pin: GPIO36
+  calibration:
+    x_min: 250
+    x_max: 3800
+    y_min: 340
+    y_max: 3860
+  transform:
+    swap_xy: true
+  on_touch:
+    - lambda: |-
+        ESP_LOGD("music_display", "Touch detected at: %d, %d", (int)touch.x, (int)touch.y);
+        
+        // Top-right corner for refresh (first 60 pixels from right, top 30 pixels)
+        if (touch.x > 260 && touch.y < 30) {
+          ESP_LOGD("music_display", "Refresh triggered");
+        }
+    - if:
+        condition:
+          lambda: 'return touch.x > 260 && touch.y < 30;'
+        then:
+          # Refresh action - force update of all sensors
+          - homeassistant.service:
+              service: homeassistant.update_entity
+              data:
+                entity_id: media_player.spotify_iain_bennett
+          - component.update: my_display
+        else:
+          # Play/pause action for rest of screen
+          - homeassistant.service:
+              service: media_player.media_play_pause
+              data:
+                entity_id: media_player.spotify_iain_bennett
+
+# ============================================================
+# Scrolling Animation Timer
+# ============================================================
+interval:
+  - interval: 500ms
+    then:
+      - lambda: |-
+          // Update scroll position for text animation
+          id(scroll_position) += id(scroll_direction);
+          if (id(scroll_position) > 50) {
+            id(scroll_position) = 0;
+          }
+      - component.update: my_display
