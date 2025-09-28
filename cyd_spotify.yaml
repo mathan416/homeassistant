@@ -38,6 +38,12 @@ globals:
   - id: scroll_direction
     type: int
     initial_value: '1'
+  - id: touch_feedback
+    type: bool
+    initial_value: 'false'
+  - id: predicted_state
+    type: std::string
+    initial_value: '""'
 
 # ============================================================
 # Home Assistant Sensors for Spotify Data
@@ -91,6 +97,9 @@ sensor:
     internal: true
     force_update: true
     on_value:
+      - logger.log:
+          format: "Position: %.1f seconds"
+          args: ['x']
       - component.update: my_display
       
   - platform: homeassistant
@@ -100,15 +109,9 @@ sensor:
     internal: true
     force_update: true
     on_value:
-      - component.update: my_display
-      
-  - platform: homeassistant
-    id: spotify_volume
-    entity_id: media_player.spotify_your_device 
-    attribute: volume_level
-    internal: true
-    force_update: true
-    on_value:
+      - logger.log:
+          format: "Duration: %.1f seconds"
+          args: ['x']
       - component.update: my_display
 
 # ============================================================
@@ -248,9 +251,10 @@ display:
       // Clear with dark background
       it.fill(id(background_dark));
       
-      // Check if music is playing
-      bool is_playing = (id(spotify_state).has_state() && 
-                        (id(spotify_state).state == "playing" || id(spotify_state).state == "paused"));
+      // Check if music is playing - use predicted state if available
+      std::string current_state = id(predicted_state) != "" ? id(predicted_state) : 
+                                 (id(spotify_state).has_state() ? id(spotify_state).state : "");
+      bool is_playing = (current_state == "playing" || current_state == "paused");
       
       if (is_playing) {
         // Header bar with Spotify branding
@@ -262,10 +266,10 @@ display:
         // Spotify logo area / title
         it.printf(160, 8, id(header_font), id(music_white), TextAlign::TOP_CENTER, "NOW PLAYING");
         
-        // Status indicator
-        if (id(spotify_state).state == "playing") {
+        // Status indicator - use predicted state for immediate response
+        if (current_state == "playing") {
           it.printf(310, 8, id(header_font), id(music_white), TextAlign::TOP_RIGHT, ">");
-        } else {
+        } else if (current_state == "paused") {
           it.printf(310, 8, id(header_font), id(music_white), TextAlign::TOP_RIGHT, "||");
         }
         
@@ -314,15 +318,15 @@ display:
           it.printf(300, 170, id(time_font), id(music_white), TextAlign::TOP_RIGHT, "%s", total_time.c_str());
         }
         
-        // Volume indicator
-        if (id(spotify_volume).has_state()) {
-          int volume_percent = (int)(id(spotify_volume).state * 100);
-          it.printf(160, 190, id(small_font), id(music_white), TextAlign::TOP_CENTER, "Volume: %d%%", volume_percent);
-        }
-        
         // Control hints
         it.printf(160, 205, id(small_font), id(music_yellow), TextAlign::TOP_CENTER, "Touch to Play/Pause");
         it.printf(160, 220, id(small_font), id(music_gray), TextAlign::TOP_CENTER, "Top-right corner to refresh");
+        
+        // Touch feedback indicator
+        if (id(touch_feedback)) {
+          it.filled_circle(160, 190, 8, id(music_white));
+          it.printf(160, 185, id(small_font), id(music_black), TextAlign::CENTER, "!");
+        }
         
       } else {
         // No music playing screen
@@ -361,23 +365,52 @@ touchscreen:
         // Top-right corner for refresh (first 60 pixels from right, top 30 pixels)
         if (touch.x > 260 && touch.y < 30) {
           ESP_LOGD("music_display", "Refresh triggered");
+        } else {
+          ESP_LOGD("music_display", "Play/pause triggered");
         }
     - if:
         condition:
           lambda: 'return touch.x > 260 && touch.y < 30;'
         then:
-          # Refresh action - force update of all sensors
+          # Refresh action
+          - logger.log: "REFRESH: Forcing Spotify update"
           - homeassistant.service:
               service: homeassistant.update_entity
               data:
                 entity_id: media_player.spotify_your_device 
-          - component.update: my_display
         else:
-          # Play/pause action for rest of screen
+          # Play/pause action with immediate state prediction
+          - logger.log: "ACTION: Sending play/pause command"
+          - lambda: |-
+              // Immediately predict the opposite state for instant UI response
+              std::string current = id(spotify_state).has_state() ? id(spotify_state).state : "paused";
+              if (current == "playing") {
+                id(predicted_state) = "paused";
+                ESP_LOGD("music_display", "Predicted state: paused");
+              } else {
+                id(predicted_state) = "playing"; 
+                ESP_LOGD("music_display", "Predicted state: playing");
+              }
+          - globals.set:
+              id: touch_feedback
+              value: 'true'
+          - component.update: my_display
+          # Send play/pause immediately without delay
           - homeassistant.service:
               service: media_player.media_play_pause
               data:
-                entity_id: media_player.spotify_your_device  
+                entity_id: media_player.spotify_your_device 
+          - logger.log: "ACTION: Play/pause service call completed"
+          - delay: 500ms
+          - globals.set:
+              id: touch_feedback
+              value: 'false'
+          # Clear predicted state after 2 seconds so real state takes over
+          - delay: 1500ms
+          - globals.set:
+              id: predicted_state
+              value: '""'
+          - component.update: my_display 
 
 # ============================================================
 # Update Intervals
@@ -394,8 +427,8 @@ interval:
           }
       - component.update: my_display
   
-  # Force Spotify data refresh every 5 seconds
-  - interval: 5s
+  # Force Spotify data refresh every 3 seconds
+  - interval: 3s
     then:
       - homeassistant.service:
           service: homeassistant.update_entity
