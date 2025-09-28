@@ -1,4 +1,5 @@
 # Add Spotify Integration to your Home Assistant
+# Update media_player.spotify_your_device to match your device entity in Home Assistant
 esphome:
   name: "esphome-web-music"
   friendly_name: Music_Display
@@ -44,7 +45,7 @@ globals:
 text_sensor:
   - platform: homeassistant
     id: spotify_artist
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: media_artist
     internal: true
     on_value:
@@ -52,7 +53,7 @@ text_sensor:
       
   - platform: homeassistant
     id: spotify_title
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: media_title
     internal: true
     on_value:
@@ -60,7 +61,7 @@ text_sensor:
       
   - platform: homeassistant
     id: spotify_album
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: media_album_name
     internal: true
     on_value:
@@ -68,7 +69,7 @@ text_sensor:
       
   - platform: homeassistant
     id: spotify_state
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     internal: true
     on_value:
       - component.update: my_display
@@ -76,7 +77,7 @@ text_sensor:
 sensor:
   - platform: homeassistant
     id: spotify_position
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: media_position
     internal: true
     on_value:
@@ -84,7 +85,7 @@ sensor:
       
   - platform: homeassistant
     id: spotify_duration
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: media_duration
     internal: true
     on_value:
@@ -92,7 +93,7 @@ sensor:
       
   - platform: homeassistant
     id: spotify_volume
-    entity_id: media_player.spotify_iain_bennett
+    entity_id: media_player.spotify_your_device 
     attribute: volume_level
     internal: true
     on_value:
@@ -357,14 +358,14 @@ touchscreen:
           - homeassistant.service:
               service: homeassistant.update_entity
               data:
-                entity_id: media_player.spotify_iain_bennett
+                entity_id: media_player.spotify_your_device 
           - component.update: my_display
         else:
           # Play/pause action for rest of screen
           - homeassistant.service:
               service: media_player.media_play_pause
               data:
-                entity_id: media_player.spotify_iain_bennett
+                entity_id: media_player.spotify_your_device 
 
 # ============================================================
 # Scrolling Animation Timer
