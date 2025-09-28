@@ -2,7 +2,7 @@
 
 This repository includes YAML configurations for use with the Cheap Yellow Display to display various information with Home Assistant.
 
-## Available Configurations
+## Available Examples - Cheap Yellow Display
 
 ### Railway Information
 - **`uk_railway.yaml`** & **`uk_railway_configuration.yaml`** - A display that shows train departures from Norwich, Newbury and Manchester Piccadilly
