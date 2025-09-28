@@ -10,6 +10,9 @@ This repository includes YAML configurations for use with the Cheap Yellow Displ
 ### Airport Information
 - **`airports.yaml`** - A display that shows flight arrivals for Toronto Pearson and Toronto Billy Bishop airports
 
+### Spotify
+- **`cyd_spotify.yaml`** - A display that shows Spotify track details and allows play/pause from the touch screen
+  
 ### Dashboard Examples
 - **`dashboard_time_temperature`** - A sample to display the time and then show inside and outside temperatures
 
