@@ -18,6 +18,9 @@ This repository includes YAML configurations for use with the Cheap Yellow Displ
 
 - **`dashboard_weather_home`** - A sample to display the inside temperature sensors and outside temperatures, plus statistics
 
+## Globe Electric Lights (Tuya)
+- **`Globe Lights/README.md`** - Step-by-step guide to adding Globe Electric (Tuya / Globe Suite) lights to Home Assistant with local control
+
 ## Setup
 
 These YAML files are designed to work with the Cheap Yellow Display and Home Assistant integration. Simply download the appropriate configuration file and customize it for your specific needs.
