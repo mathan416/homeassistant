@@ -28,6 +28,10 @@ lights keep working when your internet or Tuya's cloud is down, and they respond
 1. Install [HACS](https://hacs.xyz) if you don't already have it.
 2. HACS → search **Tuya Local** → Download → **restart Home Assistant**.
 
+> ⚠️ Don't confuse it with **LocalTuya** (rospogrigio/localtuya), a different integration with a similar
+> name that only offers a Tuya IoT developer-account login. In HACS, the one you want is
+> **Tuya Local** by **make-all**.
+
 ### 3. Add the lights
 1. **Settings → Devices & Services → Add Integration → Tuya Local**.
 2. Choose **Smart Life cloud-assisted setup**. Enter the **User Code** from Smart Life
