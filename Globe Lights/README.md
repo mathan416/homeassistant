@@ -27,6 +27,8 @@ lights keep working when your internet or Tuya's cloud is down, and they respond
 
 1. Install [HACS](https://hacs.xyz) if you don't already have it.
 2. HACS → search **Tuya Local** → Download → **restart Home Assistant**.
+   If it doesn't show up, add it as a custom repository: HACS → ⋮ (top right) → **Custom repositories** →
+   Repository `https://github.com/make-all/tuya-local`, Type **Integration** → Add, then search again.
 
 > ⚠️ Don't confuse it with **LocalTuya** (rospogrigio/localtuya), a different integration with a similar
 > name that only offers a Tuya IoT developer-account login. In HACS, the one you want is
