@@ -9,7 +9,7 @@ integration works.
 ## Recommended path (local control, no developer account)
 
 ### 1. Move the lights from Globe Suite to Smart Life
-1. Install **Smart Life** (Tuya Inc.) on your phone and create an account. Pick the **same
+1. Install **Smart Life - Smart Living** (publisher **Volcano Technology Limited**, Tuya's own app; **Tuya Smart** by Tuya Inc. also works) on your phone and create an account. Pick the **same
    country/region** you'll use everywhere else. Region mismatch is the most common cause of
    "no devices found".
 2. In Globe Suite, open each light, tap **✎ / settings → Remove Device**.
